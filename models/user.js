@@ -4,7 +4,7 @@ module.exports = class User extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
       {
-        id: {
+        userId: {
           type: Sequelize.STRING(30),
           allowNull: true,
           unique: true,
@@ -55,7 +55,7 @@ module.exports = class User extends Sequelize.Model {
     db.User.hasMany(db.Tweet);
     db.User.hasMany(db.Pray);
     db.User.hasMany(db.Post);
-    db.User.hasOne(db.penalty);
+    db.User.hasOne(db.Penalty);
     db.User.belongsToMany(db.User, {
       foreignKey: "followingId",
       as: "Followers",

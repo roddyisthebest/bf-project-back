@@ -1,6 +1,6 @@
 const Sequelize = require("sequelize");
 
-module.exports = class Penalty extends Sequelize.Model {
+module.exports = class Record extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
       {

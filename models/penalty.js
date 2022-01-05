@@ -28,6 +28,7 @@ module.exports = class Penalty extends Sequelize.Model {
     );
   }
   static associate(db) {
+    console.log(db.Penalty);
     db.Penalty.belongsTo(db.User);
   }
 };

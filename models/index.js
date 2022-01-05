@@ -32,11 +32,11 @@ Record.init(sequelize);
 Tweet.init(sequelize);
 User.init(sequelize);
 
-Penalty.associate(sequelize);
-Post.associate(sequelize);
-Pray.associate(sequelize);
-Record.associate(sequelize);
-Tweet.associate(sequelize);
-User.associate(sequelize);
+Penalty.associate(db);
+Post.associate(db);
+Pray.associate(db);
+Record.associate(db);
+Tweet.associate(db);
+User.associate(db);
 
 module.exports = db;
