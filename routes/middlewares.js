@@ -11,3 +11,10 @@ exports.isNotLoggedIn = (req, res, next) => {
   }
   return res.status(401).send("로그인한 사람은 할 수 없습니다..");
 };
+
+exports.isAdmin = (req, res, next) => {
+  if (req.user.admin) {
+    return next();
+  }
+  return res.status(401).send("관리가가 아닙니다.");
+};

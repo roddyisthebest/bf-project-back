@@ -1,6 +1,6 @@
 const passport = require("passport");
 const User = require("../models/user");
-const local = reuqire("./localStrategy");
+const local = require("./localStrategy");
 const kakao = require("./kakaoStrategy");
 const google = require("./googleStrategy");
 
@@ -11,11 +11,12 @@ module.exports = () => {
 
   passport.deserializeUser(async (id, done) => {
     try {
+      console.log(id);
       const exUser = await User.findOne({
         where: { id },
         include: [
-          { model: User, attributes: ["id", "nick"], as: "Followers" },
-          { model: User, attributes: ["id", "nick"], as: "Followings" },
+          { model: User, attributes: ["id", "name"], as: "Followers" },
+          { model: User, attributes: ["id", "name"], as: "Followings" },
         ],
       });
       done(null, exUser);

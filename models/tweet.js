@@ -10,13 +10,12 @@ module.exports = class Tweet extends Sequelize.Model {
           defaultValue: "none",
         },
         img: {
-          type: Sequelize.STRING(200),
+          type: Sequelize.STRING(500),
           allowNull: true,
         },
         weekend: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.STRING(20),
           allowNull: false,
-          defaultValue: 1,
         },
       },
       {

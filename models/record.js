@@ -10,7 +10,7 @@ module.exports = class Record extends Sequelize.Model {
           defaultValue: 0,
         },
         weekend: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.STRING(20),
           allowNull: false,
         },
       },

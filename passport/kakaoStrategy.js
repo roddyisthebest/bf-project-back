@@ -2,13 +2,15 @@ const passport = require("passport");
 const KakaoStrategy = require("passport-kakao").Strategy;
 
 const User = require("../models/user");
-
+const Penalty = require("../models/penalty");
+const Pray = require("../models/pray");
+const moment = require("moment");
 module.exports = () => {
   passport.use(
     new KakaoStrategy(
       {
         clientID: process.env.KAKAO_ID,
-        callbackURL: "/user/kakao/callback",
+        callbackURL: "http://localhost:8001/user/kakao/callback",
       },
       async (accessToken, refreshToken, profile, done) => {
         const {
@@ -32,6 +34,13 @@ module.exports = () => {
               snsId: id,
               provider: "kakao",
               img: profile_image,
+              weekend: moment().day(0).format("YYYY-MM-DD"),
+            });
+            await Penalty.create({ UserId: newUser.id });
+            await Pray.create({
+              content: "default",
+              weekend: newUser.weekend,
+              UserId: newUser.id,
             });
             done(null, newUser);
           }

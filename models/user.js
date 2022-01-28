@@ -7,12 +7,12 @@ module.exports = class User extends Sequelize.Model {
         userId: {
           type: Sequelize.STRING(30),
           allowNull: true,
-          unique: true,
+          unique: false,
         },
         name: {
           type: Sequelize.STRING(15),
           allowNull: false,
-          unique: true,
+          unique: false,
         },
         password: {
           type: Sequelize.STRING(100),
@@ -33,9 +33,13 @@ module.exports = class User extends Sequelize.Model {
           defaultValue: "none",
         },
         weekend: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.STRING(20),
           allowNull: false,
-          defaultValue: 1,
+        },
+        admin: {
+          type: Sequelize.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
         },
       },
       {

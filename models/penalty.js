@@ -12,7 +12,7 @@ module.exports = class Penalty extends Sequelize.Model {
         payed: {
           type: Sequelize.BOOLEAN,
           allowNull: false,
-          defaultValue: false,
+          defaultValue: true,
         },
       },
       {

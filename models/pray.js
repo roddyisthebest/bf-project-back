@@ -9,9 +9,8 @@ module.exports = class Pray extends Sequelize.Model {
           allowNull: false,
         },
         weekend: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.STRING(20),
           allowNull: false,
-          defaultValue: 1,
         },
       },
       {
