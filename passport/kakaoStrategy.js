@@ -4,6 +4,7 @@ const KakaoStrategy = require("passport-kakao").Strategy;
 const User = require("../models/user");
 const Penalty = require("../models/penalty");
 const Pray = require("../models/pray");
+const Record = require("../models/record");
 const moment = require("moment");
 module.exports = () => {
   passport.use(
@@ -35,6 +36,11 @@ module.exports = () => {
               provider: "kakao",
               img: profile_image,
               weekend: moment().day(0).format("YYYY-MM-DD"),
+            });
+            await Record.create({
+              UserId: newUser.id,
+              papaer: 0,
+              weekend: newUser.weekend,
             });
             await Penalty.create({ UserId: newUser.id });
             await Pray.create({

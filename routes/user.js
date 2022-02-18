@@ -2,18 +2,35 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const md5 = require("md5");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 const db = require("../models");
 const { isLoggedIn, isNotLoggedIn } = require("./middlewares");
 
 const { Op } = require("sequelize");
 const moment = require("moment");
+const { User } = require("../models");
 
 const router = express.Router();
 
 router.get("/", isLoggedIn, async (req, res, next) => {
   const user = req.user;
   res.json(user);
+});
+
+const upload_user = multer({
+  storage: multer.diskStorage({
+    destination(req, file, cb) {
+      cb(null, `uploads/user-img`);
+    },
+    filename(req, file, cb) {
+      const ext = path.extname(file.originalname);
+      cb(null, path.basename(file.originalname, ext) + Date.now() + ext);
+    },
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 },
 });
 
 // 회원가입
@@ -44,6 +61,11 @@ router.post("/", isNotLoggedIn, async (req, res, next) => {
     });
 
     await db.Penalty.create({ UserId: user.id });
+    await db.Record.create({
+      UserId: user.id,
+      papaer: 0,
+      weekend: user.weekend,
+    });
     await db.Pray.create({
       content: "default",
       weekend: user.weekend,
@@ -156,7 +178,27 @@ router.get("/:id", isLoggedIn, async (req, res, next) => {
   try {
     const user = await db.User.findOne({
       where: { id },
-      attributes: ["id", "userId", "name", "img", "provider", "createdAt"],
+      attributes: [
+        "id",
+        "userId",
+        "name",
+        "img",
+        "provider",
+        "createdAt",
+        "background",
+      ],
+      include: [
+        {
+          model: db.User,
+          as: "Followings",
+          attributes: ["id"],
+        },
+        {
+          model: db.User,
+          as: "Followers",
+          attributes: ["id"],
+        },
+      ],
     });
     if (user) {
       return res.json({ code: 200, meta: user });
@@ -168,4 +210,121 @@ router.get("/:id", isLoggedIn, async (req, res, next) => {
     return next(e);
   }
 });
+
+router.post(
+  "/img/:type",
+  isLoggedIn,
+  upload_user.single("img"),
+  async (req, res, next) => {
+    const { type } = req.params;
+    try {
+      if (type == "background") {
+        const background = req.user.background;
+        await User.update(
+          { background: `/img/user-img/${req.file.filename}` },
+          { where: { id: req.user.id } }
+        );
+        if (req.user.background != "") {
+          fs.unlink(background.replace("img", "uploads").substring(1), (err) =>
+            err ? console.error(err) : console.log("사진이 성공적으로 삭제")
+          );
+        }
+      } else {
+        const img = req.user.img;
+        await User.update(
+          { img: `http://localhost:8001/img/user-img/${req.file.filename}` },
+          { where: { id: req.user.id } }
+        );
+        fs.unlink(img.replace("img", "uploads").substring(22), (err) =>
+          err ? console.error(err) : console.log("사진이 성공적으로 삭제")
+        );
+      }
+
+      return res.json({
+        code: 200,
+        message: "회원님의 사진정보가 성공적으로 바뀌었습니다.",
+        meta:
+          type != "background"
+            ? `http://localhost:8001/img/user-img/${req.file.filename}`
+            : `/img/user-img/${req.file.filename}`,
+      });
+    } catch (e) {
+      console.log(e);
+      return next(e);
+    }
+  }
+);
+
+router.put("/", isLoggedIn, async (req, res, next) => {
+  const { userId, pw, name } = req.body;
+  const condition = {};
+  if (userId) {
+    condition.userId = userId;
+  }
+  if (pw) {
+    condition.pw = await bcrypt.hash(pw, 12);
+  }
+  if (name) {
+    condition.name = name;
+  }
+  try {
+    await db.User.update(condition, { where: { id: req.user.id } });
+    return res.json({
+      code: 200,
+      message: "회원정보가 성공적으로 변경되었습니다.",
+      meta: name,
+    });
+  } catch (e) {
+    console.log(e);
+    return next(e);
+  }
+});
+
+router.post("/back/reset", isLoggedIn, async (req, res, next) => {
+  try {
+    await User.update({ background: "" }, { where: { id: req.user.id } });
+    if (req.user.background != "") {
+      fs.unlink(
+        req.user.background.replace("img", "uploads").substring(1),
+        (err) =>
+          err ? console.error(err) : console.log("사진이 성공적으로 삭제")
+      );
+    }
+    res.json({
+      code: 200,
+      message: "회원님의 background가 기본화면으로 바뀌었습니다.",
+    });
+  } catch (e) {
+    console.log(e);
+    return next(e);
+  }
+});
+
+router.post("/follow", isLoggedIn, async (req, res, next) => {
+  const { isFollow, id } = req.body;
+  try {
+    const user = await db.User.findOne({ where: { id: req.user.id } });
+    if (user) {
+      if (isFollow) {
+        await user.addFollowing(parseInt(id, 10));
+        return res.json({
+          code: 200,
+          message: "성공적으로 팔로우 처리 되었습니다.",
+        });
+      } else {
+        await user.removeFollowing(parseInt(id, 10));
+        return res.json({
+          code: 200,
+          message: "성공적으로 팔로우 취소 되었습니다.",
+        });
+      }
+    } else {
+      return res.status(403).json({ code: 403, message: "잘못된 접근입니다." });
+    }
+  } catch (e) {
+    console.error(error);
+    next(error);
+  }
+});
+
 module.exports = router;

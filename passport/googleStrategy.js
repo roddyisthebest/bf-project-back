@@ -4,6 +4,7 @@ var GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/user");
 const Penalty = require("../models/penalty");
 const Pray = require("../models/pray");
+const Record = require("../models/record");
 
 const md5 = require("md5");
 const moment = require("moment");
@@ -35,6 +36,12 @@ module.exports = () => {
               provider: "google",
               img: profile.photos[0].value,
               weekend: moment().day(0).format("YYYY-MM-DD"),
+            });
+
+            await Record.create({
+              UserId: newUser.id,
+              papaer: 0,
+              weekend: newUser.weekend,
             });
             await Penalty.create({ UserId: newUser.id });
             await Pray.create({

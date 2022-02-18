@@ -18,6 +18,21 @@ router.get("/", isLoggedIn, async (req, res, next) => {
   }
 });
 
+router.get("/:UserId", isLoggedIn, async (req, res, next) => {
+  const { UserId } = req.params;
+  try {
+    const records = await db.Record.findAll({
+      where: { UserId },
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.json({ code: 200, meta: records });
+  } catch (e) {
+    console.log(e);
+    next(e);
+  }
+});
+
 router.post("/check", isLoggedIn, isAdmin, async (req, res) => {
   const { id, payed } = req.body;
   try {

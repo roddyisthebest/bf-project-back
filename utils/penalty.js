@@ -5,7 +5,7 @@ const Penalty = require("../models/penalty");
 const Pray = require("../models/pray");
 const { sequelize } = require("../models");
 const { Op } = require("sequelize");
-
+const Record = require("../models/record");
 const moment = require("moment");
 
 Date.prototype.getWeek = function (dowOffset) {
@@ -40,7 +40,7 @@ Date.prototype.getWeek = function (dowOffset) {
   return weeknum;
 };
 const update = () =>
-  schedule.scheduleJob("0 0 0 * * SUN", async function () {
+  schedule.scheduleJob("0 16 22 * * TUE", async function () {
     try {
       const users = await User.findAll({
         where: { admin: { [Op.not]: true } },
@@ -63,6 +63,13 @@ const update = () =>
 
         // 글로만 냈다면 500원으로
         const penalty = await Penalty.findOne({ where: { UserId: e.id } });
+        await Record.create({
+          UserId: e.id,
+          paper: pay,
+          weekend: moment().day(0).format("YYYY-MM-DD"),
+        });
+
+        // 벌금 이월
         if (!penalty.payed) {
           pay += penalty.paper;
         }
@@ -71,6 +78,7 @@ const update = () =>
           { paper: pay, payed: pay ? false : true },
           { where: { id: penalty.id } }
         );
+
         await Pray.create({
           UserId: e.id,
           weekend: moment().day(0).format("YYYY-MM-DD"),

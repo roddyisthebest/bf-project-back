@@ -26,6 +26,28 @@ router.get("/", isLoggedIn, async (req, res, next) => {
   }
 });
 
+router.get("/:UserId/:lastId", isLoggedIn, async (req, res, next) => {
+  const { UserId, lastId } = req.params;
+
+  try {
+    const where = { UserId, content: { [Op.not]: "default" } };
+    if (parseInt(lastId, 10)) {
+      where.id = { [Op.lt]: parseInt(lastId, 10) };
+    }
+    const prays = await db.Pray.findAll({
+      where,
+      order: [["createdAt", "DESC"]],
+
+      limit: 5,
+    });
+
+    return res.json({ code: 200, meta: prays });
+  } catch (e) {
+    console.log(e);
+    next(e);
+  }
+});
+
 router.post("/", isLoggedIn, async (req, res, next) => {
   const { UserId, content } = req.body;
   try {
