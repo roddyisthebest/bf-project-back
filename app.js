@@ -6,7 +6,7 @@ const session = require("express-session");
 const dotenv = require("dotenv");
 const passport = require("passport");
 const cors = require("cors");
-const update = require("./utils/penalty");
+const update = require("./utils/update");
 const app = express();
 
 const webSocket = require("./socket");

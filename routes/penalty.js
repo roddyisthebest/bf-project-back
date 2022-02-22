@@ -8,7 +8,11 @@ const router = express.Router();
 router.get("/", isLoggedIn, async (req, res, next) => {
   try {
     const penaltys = await db.Penalty.findAll({
-      include: { model: db.User, attributes: ["id", "img", "name", "weekend"] },
+      include: {
+        model: db.User,
+        where: { admin: { [Op.not]: true } },
+        attributes: ["id", "img", "name", "weekend"],
+      },
     });
 
     res.json({ code: 200, meta: penaltys });
