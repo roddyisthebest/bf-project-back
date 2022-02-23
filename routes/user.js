@@ -149,7 +149,7 @@ router.get("/google/callback", (req, res, next) => {
         console.log(loginError);
         return next(loginError);
       }
-      return res.redirect("http://localhost:8080/login");
+      return res.redirect("http://localhost:8080/loginPass");
     });
   })(req, res, next);
 });
@@ -168,7 +168,7 @@ router.get("/kakao/callback", (req, res, next) => {
         console.log(loginError);
         return next(loginError);
       }
-      return res.redirect("http://localhost:8080/login");
+      return res.redirect("http://localhost:8080/loginPass");
     });
   })(req, res, next);
 });
