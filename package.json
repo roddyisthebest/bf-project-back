@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app"
+    "dev": "nodemon app",
+    "start": "NODE_ENV=prod node app"
   },
   "repository": {
     "type": "git",
@@ -18,11 +19,15 @@
   "homepage": "https://github.com/roddyisthebest/bf-project#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "connect-redis": "^6.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^10.0.0",
     "express": "^4.17.2",
     "express-session": "^1.17.2",
+    "helmet": "^5.0.2",
+    "hpp": "^0.2.3",
     "md5": "^2.3.0",
     "moment": "^2.29.1",
     "morgan": "^1.10.0",
@@ -35,6 +40,9 @@
     "passport-kakao": "^1.0.1",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
+    "pm2": "^5.2.0",
+    "redis": "^4.0.4",
+    "sanitize-html": "^2.7.0",
     "sequelize": "^6.12.5",
     "sequelize-cli": "^6.3.0",
     "socket.io": "^4.4.1",

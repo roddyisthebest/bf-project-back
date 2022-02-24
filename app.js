@@ -8,12 +8,20 @@ const passport = require("passport");
 const cors = require("cors");
 const update = require("./utils/update");
 const app = express();
+const hpp = require("hpp");
+const redis = require("redis");
+const RedisStore = require("connect-redis")(session);
 
 const webSocket = require("./socket");
 dotenv.config();
 
 const { sequelize } = require("./models");
 
+// const redisClient = redis.createClient({
+//   url: `redis://${process.env.REDIS_HOST}`,
+//   password: process.env.REDIS_PASSWORD,
+//   legacyMode: true,
+// });
 sequelize
   .sync({ force: false })
   .then(() => console.log("데이터 베이스 연결 성공했다리요!"))
@@ -28,7 +36,13 @@ const postRoutes = require("./routes/post");
 const penaltyRoutes = require("./routes/penalty");
 const prayRoutes = require("./routes/pray");
 
-app.use(morgan("dev"));
+if (process.env.NODE_ENV === "prod") {
+  app.use(morgan("combined"));
+  app.use(hpp());
+} else {
+  app.use(morgan("dev"));
+}
+
 app.use(
   cors({
     origin: "http://localhost:8080",
@@ -42,17 +56,22 @@ app.use("/img", express.static(path.join(__dirname, "uploads")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
-app.use(
-  session({
-    resave: false,
-    saveUninitialized: false,
-    secret: process.env.COOKIE_SECRET,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-    },
-  })
-);
+
+const sessionOption = {
+  resave: false,
+  saveUninitialized: false,
+  secret: process.env.COOKIE_SECRET,
+  cookie: {
+    httpOnly: true,
+    secure: false,
+  },
+};
+
+if (process.env.NODE_ENV === "prod") {
+  sessionOption.proxy = true;
+}
+
+app.use(session(sessionOption));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -70,7 +89,7 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
   res.locals.message = err.message;
-  res.locals.error = process.env.NODE_ENV !== "production" ? err : {};
+  res.locals.error = process.env.NODE_ENV !== "prod" ? err : {};
   res.status(err.status || 500);
   res.json({ code: err.status, err });
 });

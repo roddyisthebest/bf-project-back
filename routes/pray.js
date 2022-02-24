@@ -3,6 +3,7 @@ const db = require("../models");
 const { Op } = require("sequelize");
 const { isLoggedIn } = require("./middlewares");
 const moment = require("moment");
+const sanitizeHtml = require("sanitize-html");
 
 const router = express.Router();
 
@@ -49,7 +50,9 @@ router.get("/:UserId/:lastId", isLoggedIn, async (req, res, next) => {
 });
 
 router.post("/", isLoggedIn, async (req, res, next) => {
-  const { UserId, content } = req.body;
+  const { UserId, content: pureContent } = req.body;
+  const content = sanitizeHtml(pureContent);
+
   try {
     const pray = await db.Pray.create({
       UserId,
@@ -69,7 +72,9 @@ router.post("/", isLoggedIn, async (req, res, next) => {
 });
 
 router.put("/", isLoggedIn, async (req, res, next) => {
-  const { id, content } = req.body;
+  const { id, content: pureContent } = req.body;
+  const content = sanitizeHtml(pureContent);
+
   try {
     await db.Pray.update({ content }, { where: { id } });
     return res.send({

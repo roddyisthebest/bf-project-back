@@ -7,6 +7,7 @@ const { isLoggedIn } = require("./middlewares");
 const { Tweet, User } = require("../models");
 const { Op } = require("sequelize");
 const moment = require("moment");
+const sanitizeHtml = require("sanitize-html");
 
 const router = express.Router();
 
@@ -46,7 +47,8 @@ router.post("/img/delete", isLoggedIn, (req, res, next) => {
 });
 
 router.post("/tweet", isLoggedIn, async (req, res, next) => {
-  const { content, img } = req.body;
+  const { content: pureContent, img } = req.body;
+  const content = sanitizeHtml(pureContent);
   try {
     const user = await User.findOne({
       where: {
