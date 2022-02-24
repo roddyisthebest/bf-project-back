@@ -10,7 +10,7 @@ module.exports = {
     timezone: "+09:00",
   },
 
-  production: {
+  prod: {
     host: "us-cdbr-east-05.cleardb.net",
     user: "b8dabc4d000c47",
     password: process.env.SEQUELIZE_PASSWORD,
