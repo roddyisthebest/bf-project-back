@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
-const env = process.env.NODE_ENV || "development";
-const config = require("../config/config")[env];
+// const env = process.env.NODE_ENV || "development";
+const config =
+  require("../config/config")[process.env.NODE_ENV || "development"];
 
 const Penalty = require("./penalty");
 const Post = require("./post");
