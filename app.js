@@ -45,11 +45,11 @@ if (process.env.NODE_ENV === "prod") {
 
 app.use(
   cors({
-    origin: "http://localhost:8080",
+    origin: "http://localhost:8080/",
     credentials: true,
   })
 );
-app.set("port", process.env.PORT || 8001);
+app.set("port", process.env.PORT || 3000);
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/img", express.static(path.join(__dirname, "uploads")));
 
