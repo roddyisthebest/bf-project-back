@@ -45,11 +45,11 @@ if (process.env.NODE_ENV === "prod") {
 
 app.use(
   cors({
-    origin: "http://localhost:8080/",
+    origin: "http://localhost:8080",
     credentials: true,
   })
 );
-app.set("port", process.env.PORT || 3000);
+app.set("port", process.env.PORT || 80);
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/img", express.static(path.join(__dirname, "uploads")));
 
@@ -76,6 +76,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 update();
+app.get("/", (req, res, next) => {
+  res.send("서버호스팅 완료!");
+});
 app.use("/user", userRoutes);
 app.use("/post", postRoutes);
 app.use("/penalty", penaltyRoutes);
