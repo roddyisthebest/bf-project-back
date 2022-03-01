@@ -1,12 +1,12 @@
 const passport = require("passport");
 var GoogleStrategy = require("passport-google-oauth20").Strategy;
-
+const dotenv = require("dotenv");
 const User = require("../models/user");
 const Penalty = require("../models/penalty");
 const Pray = require("../models/pray");
 const Record = require("../models/record");
 
-const md5 = require("md5");
+dotenv.config();
 const moment = require("moment");
 
 module.exports = () => {
@@ -15,7 +15,7 @@ module.exports = () => {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: "http://localhost:8001/user/google/callback",
+        callbackURL: `${process.env.BASE_URL}/user/google/callback`,
         prompt: "consent",
         scope: ["profile"],
         passReqToCallback: false,

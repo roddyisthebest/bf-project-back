@@ -5,7 +5,8 @@ const md5 = require("md5");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-
+const dotenv = require("dotenv");
+dotenv.config();
 const db = require("../models");
 const { isLoggedIn, isNotLoggedIn } = require("./middlewares");
 
@@ -232,7 +233,7 @@ router.post(
       } else {
         const img = req.user.img;
         await User.update(
-          { img: `http://localhost:8001/img/user-img/${req.file.filename}` },
+          { img: `${process.env.BASE_URL}/img/user-img/${req.file.filename}` },
           { where: { id: req.user.id } }
         );
         fs.unlink(img.replace("img", "uploads").substring(22), (err) =>
@@ -245,7 +246,7 @@ router.post(
         message: "회원님의 사진정보가 성공적으로 바뀌었습니다.",
         meta:
           type != "background"
-            ? `http://localhost:8001/img/user-img/${req.file.filename}`
+            ? `${process.env.BASE_URL}/img/user-img/${req.file.filename}`
             : `/img/user-img/${req.file.filename}`,
       });
     } catch (e) {

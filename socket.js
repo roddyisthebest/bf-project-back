@@ -1,9 +1,10 @@
 const SocketIO = require("socket.io");
-
+const dotenv = require("dotenv");
+dotenv.config();
 module.exports = (server) => {
   const io = SocketIO(server, {
     cors: true,
-    origins: ["http://localhost:8080"],
+    origins: [process.env.FRONT_URL],
   });
 
   io.on("connection", (socket) => {
